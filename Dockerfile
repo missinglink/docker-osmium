@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM alpine:3.21
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
@@ -12,9 +12,11 @@ RUN apk add --no-cache \
         geos-dev \
         git \
         make \
-        proj4-dev \
+        proj-dev \
         sparsehash \
-        zlib-dev
+        zlib-dev \
+        lz4-dev \
+        nlohmann-json
 
 RUN mkdir /code
 
@@ -22,7 +24,7 @@ RUN cd /code && git clone https://github.com/mapbox/protozero.git && \
         cd /code/protozero && \
         mkdir build && \
         cd build && \
-        cmake .. && \
+        cmake -DBUILD_TESTING=OFF .. && \
         make && \
         make install
 
@@ -30,14 +32,14 @@ RUN cd /code && git clone https://github.com/osmcode/libosmium.git && \
         cd libosmium && \
         mkdir build && \
         cd build && \
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_EXAMPLES=OFF .. && \
+        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF .. && \
         make
 
 RUN cd /code && git clone https://github.com/osmcode/osmium-tool.git && \
         cd /code/osmium-tool && \
         mkdir build && \
         cd build && \
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel .. && \
+        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF .. && \
         make && \
         make install
 
